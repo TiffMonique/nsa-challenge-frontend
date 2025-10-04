@@ -1,0 +1,22 @@
+{
+  "placeholderImages": [
+    {
+      "id": "star-texture",
+      "description": "Texture for the star in the 3D visualization",
+      "imageUrl": "https://images.unsplash.com/photo-1595236629937-aadaf7c1d99d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzdW4lMjB0ZXh0dXJlfGVufDB8fHx8MTc1OTUzMDczN3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "sun texture"
+    },
+    {
+      "id": "planet-texture-confirmed",
+      "description": "Vibrant texture for a confirmed exoplanet",
+      "imageUrl": "https://images.unsplash.com/photo-1635315619556-5826839a1bea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxlYXJ0aCUyMHRleHR1cmV8ZW58MHx8fHwxNzU5NjA4OTI5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "earth texture"
+    },
+    {
+      "id": "planet-texture-neutral",
+      "description": "Neutral texture for an unconfirmed exoplanet",
+      "imageUrl": "https://images.unsplash.com/photo-1609668233461-019a1e3188ec?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtb29uJTIwdGV4dHVyZXxlbnwwfHx8fDE3NTk2MDg5Mjl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "moon texture"
+    }
+  ]
+}
