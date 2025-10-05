@@ -45,16 +45,30 @@ export function PlanetVisualization({ status, data, onPlanetClick }: PlanetVisua
     const neutralPlanetTexture = textureLoader.load(PlaceHolderImages.find(p => p.id === 'planet-texture-neutral')?.imageUrl || '');
     const confirmedPlanetTexture = textureLoader.load(PlaceHolderImages.find(p => p.id === 'planet-texture-confirmed')?.imageUrl || '');
 
-    // Star
-    const starGeometry = new THREE.SphereGeometry(1.5, 32, 32);
-    const starMaterial = new THREE.MeshBasicMaterial({ map: starTexture, emissive: 0xffff00, emissiveIntensity: 1 });
+    // Star - adjust size and color based on stellar parameters
+    const stellarRadius = data?.st_rad || 1;
+    const stellarTemp = data?.st_teff || data?.koi_steff || 5778; // Default to Sun's temperature
+    const starSize = Math.max(1, Math.min(stellarRadius * 1.5, 2.5));
+
+    // Color based on temperature (simplified blackbody approximation)
+    let starColor = 0xffff00; // Default yellow
+    if (stellarTemp < 3700) starColor = 0xff6600; // Red
+    else if (stellarTemp < 5200) starColor = 0xffaa00; // Orange
+    else if (stellarTemp < 6000) starColor = 0xffff00; // Yellow
+    else if (stellarTemp < 7500) starColor = 0xffffaa; // Yellow-white
+    else if (stellarTemp < 10000) starColor = 0xaaaaff; // White-blue
+    else starColor = 0x6666ff; // Blue
+
+    const starGeometry = new THREE.SphereGeometry(starSize, 32, 32);
+    const starMaterial = new THREE.MeshBasicMaterial({ map: starTexture, color: starColor });
     const star = new THREE.Mesh(starGeometry, starMaterial);
     scene.add(star);
-    const starLight = new THREE.PointLight(0xfff0dd, 20, 100);
+    const starLight = new THREE.PointLight(starColor, 20, 100);
     star.add(starLight);
 
-    // Planet
-    const planetScale = data?.koi_prad ? Math.max(0.2, Math.min(data.koi_prad / 10, 0.8)) : 0.4;
+    // Planet - use pl_rade or koi_prad for radius
+    const planetRadius = data?.pl_rade || data?.koi_prad || 4;
+    const planetScale = Math.max(0.2, Math.min(planetRadius / 10, 0.8));
     const planetGeometry = new THREE.SphereGeometry(planetScale, 32, 32);
     const planetMaterial = new THREE.MeshStandardMaterial({
         color: statusConfig[status].planetColor,
@@ -67,11 +81,28 @@ export function PlanetVisualization({ status, data, onPlanetClick }: PlanetVisua
     planetRef.current = planet;
     scene.add(planet);
 
-    // Orbit
-    const orbitRadius = 5;
-    const orbitGeometry = new THREE.BufferGeometry().setFromPoints(
-      new THREE.Path().absarc(0, 0, orbitRadius, 0, Math.PI * 2, false).getSpacedPoints(128)
-    );
+    // Orbit - use pl_orbper or koi_period for orbital radius calculation
+    const orbitalPeriod = data?.pl_orbper || data?.koi_period || 10;
+    const orbitRadius = Math.max(3, Math.min(orbitalPeriod / 2, 7));
+
+    // Eccentricity based on insolation (higher insolation = more elliptical)
+    const insolation = data?.pl_insol || 1000;
+    const eccentricity = Math.min(0.3, insolation / 10000); // 0 to 0.3
+
+    // Create elliptical orbit path
+    const orbitPoints = [];
+    const segments = 128;
+    for (let i = 0; i <= segments; i++) {
+      const angle = (i / segments) * Math.PI * 2;
+      const r = orbitRadius * (1 - eccentricity * eccentricity) / (1 + eccentricity * Math.cos(angle));
+      orbitPoints.push(new THREE.Vector3(
+        Math.cos(angle) * r,
+        0,
+        Math.sin(angle) * r
+      ));
+    }
+
+    const orbitGeometry = new THREE.BufferGeometry().setFromPoints(orbitPoints);
     const orbitMaterial = new THREE.LineDashedMaterial({
         color: statusConfig[status].orbitColor,
         linewidth: 1,
@@ -81,7 +112,12 @@ export function PlanetVisualization({ status, data, onPlanetClick }: PlanetVisua
     });
     const orbit = new THREE.Line(orbitGeometry, orbitMaterial);
     orbit.computeLineDistances();
-    orbit.rotation.x = Math.PI / 2;
+
+    // Orbital inclination based on equilibrium temperature (hotter = more inclined)
+    const eqTemp = data?.pl_eqt || data?.koi_teq || 300;
+    const orbitalInclination = Math.min(Math.PI / 6, (eqTemp / 3000) * (Math.PI / 4)); // Max 45 degrees
+    orbit.rotation.x = Math.PI / 2 + orbitalInclination;
+
     scene.add(orbit);
 
     // Starfield
@@ -119,11 +155,23 @@ export function PlanetVisualization({ status, data, onPlanetClick }: PlanetVisua
     const animate = () => {
         requestAnimationFrame(animate);
         const elapsedTime = clock.getElapsedTime();
-        const orbitSpeed = data?.koi_period ? 50 / data.koi_period : 1;
-        
-        planet.position.x = Math.cos(elapsedTime * orbitSpeed) * orbitRadius;
-        planet.position.z = Math.sin(elapsedTime * orbitSpeed) * orbitRadius;
-        planet.rotation.y += 0.005;
+        // Use pl_orbper or koi_period for orbit speed calculation
+        const orbitSpeed = orbitalPeriod ? 50 / orbitalPeriod : 1;
+        const angle = elapsedTime * orbitSpeed;
+
+        // Elliptical orbital motion
+        const r = orbitRadius * (1 - eccentricity * eccentricity) / (1 + eccentricity * Math.cos(angle));
+        const baseX = Math.cos(angle) * r;
+        const baseZ = Math.sin(angle) * r;
+
+        // Apply orbital inclination
+        planet.position.x = baseX;
+        planet.position.y = baseZ * Math.sin(orbitalInclination);
+        planet.position.z = baseZ * Math.cos(orbitalInclination);
+
+        // Planet self-rotation - vary based on planet size (larger planets rotate slower)
+        const rotationSpeed = planetRadius ? 0.01 / Math.sqrt(planetRadius) : 0.005;
+        planet.rotation.y += rotationSpeed;
 
         starfield.rotation.y += 0.0001;
 

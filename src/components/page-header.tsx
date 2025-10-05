@@ -11,11 +11,7 @@ export function PageHeader() {
             <p className="text-xs md:text-sm text-muted-foreground">Descubre si tu candidato es un planeta real</p>
           </div>
         </div>
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-          <a href="#" className="text-foreground hover:text-primary transition-colors">Inicio</a>
-          <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Cómo Funciona</a>
-          <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Acerca De</a>
-        </nav>
+        {/* Navigation hidden */}
       </div>
     </header>
   );
