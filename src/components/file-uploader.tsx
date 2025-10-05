@@ -67,10 +67,29 @@ export function FileUploader({ onDataLoaded, onAnalyze, isDataLoaded, isAnalyzin
         setCsvRows(json);
         setSelectedRowIndex('0');
 
-        const firstRow = json[0] as ExoplanetData;
-        setSelectedRowData(firstRow);
+        const firstRow = json[0] as any;
+        // Convert numeric strings to numbers
+        const parsedFirstRow = {
+          ...firstRow,
+          ra: firstRow.ra ? parseFloat(firstRow.ra) : null,
+          dec: firstRow.dec ? parseFloat(firstRow.dec) : null,
+          st_pmra: firstRow.st_pmra ? parseFloat(firstRow.st_pmra) : null,
+          st_pmdec: firstRow.st_pmdec ? parseFloat(firstRow.st_pmdec) : null,
+          pl_orbper: firstRow.pl_orbper ? parseFloat(firstRow.pl_orbper) : null,
+          pl_trandurh: firstRow.pl_trandurh ? parseFloat(firstRow.pl_trandurh) : null,
+          pl_trandep: firstRow.pl_trandep ? parseFloat(firstRow.pl_trandep) : null,
+          pl_rade: firstRow.pl_rade ? parseFloat(firstRow.pl_rade) : null,
+          pl_insol: firstRow.pl_insol ? parseFloat(firstRow.pl_insol) : null,
+          pl_eqt: firstRow.pl_eqt ? parseFloat(firstRow.pl_eqt) : null,
+          st_tmag: firstRow.st_tmag ? parseFloat(firstRow.st_tmag) : null,
+          st_dist: firstRow.st_dist ? parseFloat(firstRow.st_dist) : null,
+          st_teff: firstRow.st_teff ? parseFloat(firstRow.st_teff) : null,
+          st_logg: firstRow.st_logg ? parseFloat(firstRow.st_logg) : null,
+          st_rad: firstRow.st_rad ? parseFloat(firstRow.st_rad) : null
+        };
 
-        onDataLoaded(firstRow);
+        setSelectedRowData(parsedFirstRow);
+        onDataLoaded(parsedFirstRow as ExoplanetData);
         setFileName(file.name);
         toast({ title: "Éxito", description: `Archivo cargado con ${json.length} filas.` });
 
@@ -136,17 +155,38 @@ export function FileUploader({ onDataLoaded, onAnalyze, isDataLoaded, isAnalyzin
     setSelectedRowIndex(value);
     const rowIndex = parseInt(value);
     const selectedRow = csvRows[rowIndex];
-    setSelectedRowData(selectedRow);
+
+    // Convert numeric strings to numbers
+    const parsedRow = {
+      ...selectedRow,
+      ra: selectedRow.ra ? parseFloat(selectedRow.ra) : null,
+      dec: selectedRow.dec ? parseFloat(selectedRow.dec) : null,
+      st_pmra: selectedRow.st_pmra ? parseFloat(selectedRow.st_pmra) : null,
+      st_pmdec: selectedRow.st_pmdec ? parseFloat(selectedRow.st_pmdec) : null,
+      pl_orbper: selectedRow.pl_orbper ? parseFloat(selectedRow.pl_orbper) : null,
+      pl_trandurh: selectedRow.pl_trandurh ? parseFloat(selectedRow.pl_trandurh) : null,
+      pl_trandep: selectedRow.pl_trandep ? parseFloat(selectedRow.pl_trandep) : null,
+      pl_rade: selectedRow.pl_rade ? parseFloat(selectedRow.pl_rade) : null,
+      pl_insol: selectedRow.pl_insol ? parseFloat(selectedRow.pl_insol) : null,
+      pl_eqt: selectedRow.pl_eqt ? parseFloat(selectedRow.pl_eqt) : null,
+      st_tmag: selectedRow.st_tmag ? parseFloat(selectedRow.st_tmag) : null,
+      st_dist: selectedRow.st_dist ? parseFloat(selectedRow.st_dist) : null,
+      st_teff: selectedRow.st_teff ? parseFloat(selectedRow.st_teff) : null,
+      st_logg: selectedRow.st_logg ? parseFloat(selectedRow.st_logg) : null,
+      st_rad: selectedRow.st_rad ? parseFloat(selectedRow.st_rad) : null
+    };
+
+    setSelectedRowData(parsedRow);
 
     // Convert row to JSON and log to console
-    console.log('Selected Row as JSON:', JSON.stringify(selectedRow, null, 2));
+    console.log('Selected Row as JSON:', JSON.stringify(parsedRow, null, 2));
 
     // Transform and log API payload format
-    const apiPayload = transformToApiPayload(selectedRow);
+    const apiPayload = transformToApiPayload(parsedRow);
     console.log('API Payload:', JSON.stringify(apiPayload, null, 2));
 
     // Also load the data for analysis
-    onDataLoaded(selectedRow as ExoplanetData);
+    onDataLoaded(parsedRow as ExoplanetData);
   };
 
   const handleBatchAnalysis = async () => {
