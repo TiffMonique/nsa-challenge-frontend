@@ -36,6 +36,9 @@ export function PlanetVisualization({ status, data, onPlanetClick }: PlanetVisua
   const sceneRef = useRef<THREE.Scene | null>(null);
   const orbitRef = useRef<THREE.Line | null>(null);
   const [lightCurveData, setLightCurveData] = useState<number[]>([]);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const handleResizeRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -49,12 +52,14 @@ export function PlanetVisualization({ status, data, onPlanetClick }: PlanetVisua
     const scene = new THREE.Scene();
     sceneRef.current = scene; // Store reference
     const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
+    cameraRef.current = camera; // Store camera reference
     // Position camera to view orbit from slightly above - adjusted for larger scale
     camera.position.z = -15; // Behind the scene looking toward star
     camera.position.y = 3;
     camera.lookAt(0, 0, 0);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    rendererRef.current = renderer; // Store renderer reference
     renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     currentMount.appendChild(renderer.domElement);
@@ -362,32 +367,47 @@ export function PlanetVisualization({ status, data, onPlanetClick }: PlanetVisua
 
     // Handle resize
     const handleResize = () => {
-      if (!currentMount) return;
-      camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
+      if (!currentMount || !camera || !renderer) return;
+      const width = currentMount.clientWidth;
+      const height = currentMount.clientHeight;
+      
+      camera.aspect = width / height;
       camera.updateProjectionMatrix();
-      renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+      renderer.setSize(width, height);
       renderer.setPixelRatio(window.devicePixelRatio);
+      // Force a render after resize
+      renderer.render(scene, camera);
     };
+    handleResizeRef.current = handleResize; // Store in ref for external access
     window.addEventListener('resize', handleResize);
 
-    // Trigger initial resize and start animation after DOM is ready
-    const resizeTimeout = setTimeout(() => {
-      handleResize();
-      renderer.render(scene, camera);
-      animate(); // Start animation after initial setup
-    }, 100);
+    // Force immediate resize and start animation
+    // Use immediate call plus requestAnimationFrame for robustness
+    handleResize(); // Immediate call
+    renderer.render(scene, camera); // Initial render
+    
+    // Double RAF to ensure DOM is ready and layout is stable
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        handleResize();
+        renderer.render(scene, camera);
+        animate(); // Start animation loop
+      });
+    });
 
     return () => {
       if (animationFrameId !== null) {
         cancelAnimationFrame(animationFrameId);
       }
-      clearTimeout(resizeTimeout);
       window.removeEventListener('resize', handleResize);
       renderer.domElement.removeEventListener('click', onCanvasClick);
       if (currentMount.contains(renderer.domElement)) {
         currentMount.removeChild(renderer.domElement);
       }
       renderer.dispose();
+      rendererRef.current = null;
+      cameraRef.current = null;
+      handleResizeRef.current = null;
       scene.traverse(object => {
         if (object instanceof THREE.Mesh) {
           object.geometry.dispose();
@@ -399,7 +419,41 @@ export function PlanetVisualization({ status, data, onPlanetClick }: PlanetVisua
         }
       });
     };
-  }, [data]); // Rebuild scene when data changes
+  }, [data, status]); // Rebuild scene when data or status changes
+
+  // Force resize when component becomes visible or layout changes
+  useEffect(() => {
+    // Use multiple delays to catch different timing issues
+    const timeouts = [0, 50, 100, 200, 500].map(delay => 
+      setTimeout(() => {
+        if (handleResizeRef.current) {
+          console.log(`🔄 Forcing resize at ${delay}ms`);
+          handleResizeRef.current();
+        }
+      }, delay)
+    );
+
+    return () => {
+      timeouts.forEach(timeout => clearTimeout(timeout));
+    };
+  }, [data, status]);
+
+  // Add ResizeObserver to detect when container size changes
+  useEffect(() => {
+    if (!mountRef.current) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (handleResizeRef.current) {
+        handleResizeRef.current();
+      }
+    });
+
+    resizeObserver.observe(mountRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     const config = statusConfig[status];

@@ -160,8 +160,8 @@ export function ExoAiExplorer() {
   return (
     <div className="relative min-h-screen w-full flex flex-col">
       <PageHeader />
-      <main className="flex-grow flex flex-col lg:flex-row items-center justify-center pt-20 pb-16">
-        <div className="w-full lg:w-2/5 h-full">
+      <main className="flex-grow flex flex-col lg:flex-row items-stretch justify-center pt-20 pb-16">
+        <div className="w-full lg:w-2/5 flex-shrink-0">
           <FileUploader
             onDataLoaded={handleDataLoaded}
             onAnalyze={handleAnalyze}
@@ -169,7 +169,7 @@ export function ExoAiExplorer() {
             isAnalyzing={analysisStatus === 'analyzing'}
           />
         </div>
-        <div className="w-full lg:w-3/5 h-[50vh] lg:h-full">
+        <div className="w-full lg:w-3/5 h-[50vh] lg:h-auto lg:min-h-[600px] flex-grow">
           <PlanetVisualization 
             status={analysisStatus}
             data={exoplanetData}
