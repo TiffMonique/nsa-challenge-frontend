@@ -244,4 +244,6 @@ This project is licensed under the MIT License.
 
 **🪐 Generated with Claude Code**
 
-**Co-Authored-By: Claude <noreply@anthropic.com>**
+Acknowledgment: The repository and project documentation include attribution lines such as
+Co-Authored-By: Claude <noreply@anthropic.com>
+to indicate AI assistance in code generation.
