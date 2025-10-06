@@ -252,37 +252,8 @@ export function PlanetVisualization({ status, data, onPlanetClick }: PlanetVisua
       }
     });
 
-    // Assume circular orbit for simplicity (eccentricity = 0)
-    const eccentricity = 0;
-
-    // Create circular orbit path
-    const orbitPoints = [];
-    const segments = 128;
-    for (let i = 0; i <= segments; i++) {
-      const angle = (i / segments) * Math.PI * 2;
-      orbitPoints.push(new THREE.Vector3(
-        Math.cos(angle) * orbitRadius,
-        0,
-        Math.sin(angle) * orbitRadius
-      ));
-    }
-
-    const orbitGeometry = new THREE.BufferGeometry().setFromPoints(orbitPoints);
-    const orbitMaterial = new THREE.LineDashedMaterial({
-        color: starColor, // Orbit matches star color
-        linewidth: 1,
-        scale: 1,
-        dashSize: 0.2,
-        gapSize: 0.1,
-        opacity: 0.6,
-        transparent: true
-    });
-    const orbit = new THREE.Line(orbitGeometry, orbitMaterial);
-    orbit.computeLineDistances();
-    orbit.rotation.x = Math.PI / 2; // Horizontal orbit
-    orbitRef.current = orbit; // Store reference
-
-    scene.add(orbit);
+    // Orbit removed - no visual orbit line displayed
+    orbitRef.current = null;
 
     // Starfield
     const starfieldGeometry = new THREE.BufferGeometry();
@@ -451,11 +422,10 @@ export function PlanetVisualization({ status, data, onPlanetClick }: PlanetVisua
         }
     }
 
-    // Orbit visibility based on status
-    if (orbitRef.current) {
-      // Keep the stellar classification color, don't override
-      orbitRef.current.visible = status !== 'false_positive';
-    }
+    // Orbit visibility based on status (orbit disabled)
+    // if (orbitRef.current) {
+    //   orbitRef.current.visible = status !== 'false_positive';
+    // }
 
     if (status === 'confirmed') {
         setShowConfetti(true);
