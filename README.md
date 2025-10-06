@@ -119,6 +119,8 @@ The application requires a backend API running on `http://localhost:8000` with t
   },
   "model_accuracy_percentage": 82.4
 }
+
+you can download the backend API from here: https://github.com/csarfigueroa/exoplanet-hunters-server
 ```
 
 ## 📁 Project Structure
