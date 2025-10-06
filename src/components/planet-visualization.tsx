@@ -291,7 +291,7 @@ export function PlanetVisualization({ status, data, onPlanetClick }: PlanetVisua
 
     // Animation loop
     const clock = new THREE.Clock();
-    let animationFrameId: number;
+    let animationFrameId: number | null = null;
     const animate = () => {
         animationFrameId = requestAnimationFrame(animate);
         const elapsedTime = clock.getElapsedTime();
@@ -359,7 +359,6 @@ export function PlanetVisualization({ status, data, onPlanetClick }: PlanetVisua
 
         renderer.render(scene, camera);
     };
-    animate();
 
     // Handle resize
     const handleResize = () => {
@@ -371,14 +370,17 @@ export function PlanetVisualization({ status, data, onPlanetClick }: PlanetVisua
     };
     window.addEventListener('resize', handleResize);
 
-    // Trigger initial resize after a small delay to ensure DOM is ready
+    // Trigger initial resize and start animation after DOM is ready
     const resizeTimeout = setTimeout(() => {
       handleResize();
       renderer.render(scene, camera);
+      animate(); // Start animation after initial setup
     }, 100);
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+      }
       clearTimeout(resizeTimeout);
       window.removeEventListener('resize', handleResize);
       renderer.domElement.removeEventListener('click', onCanvasClick);
