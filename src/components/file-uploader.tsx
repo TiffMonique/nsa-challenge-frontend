@@ -20,10 +20,6 @@ interface FileUploaderProps {
 const transformToApiPayload = (data: any) => {
   return {
     stellar_data: {
-      ra: data.ra || 0,
-      dec: data.dec || 0,
-      st_pmra: data.st_pmra || 0,
-      st_pmdec: data.st_pmdec || 0,
       pl_orbper: data.pl_orbper || 0,
       pl_trandurh: data.pl_trandurh || 0,
       pl_trandep: data.pl_trandep || 0,
@@ -31,7 +27,6 @@ const transformToApiPayload = (data: any) => {
       pl_insol: data.pl_insol || 0,
       pl_eqt: data.pl_eqt || 0,
       st_tmag: data.st_tmag || 0,
-      st_dist: data.st_dist || 0,
       st_teff: data.st_teff || 0,
       st_logg: data.st_logg || 0,
       st_rad: data.st_rad || 0
@@ -71,10 +66,6 @@ export function FileUploader({ onDataLoaded, onAnalyze, isDataLoaded, isAnalyzin
         // Convert numeric strings to numbers
         const parsedFirstRow = {
           ...firstRow,
-          ra: firstRow.ra ? parseFloat(firstRow.ra) : null,
-          dec: firstRow.dec ? parseFloat(firstRow.dec) : null,
-          st_pmra: firstRow.st_pmra ? parseFloat(firstRow.st_pmra) : null,
-          st_pmdec: firstRow.st_pmdec ? parseFloat(firstRow.st_pmdec) : null,
           pl_orbper: firstRow.pl_orbper ? parseFloat(firstRow.pl_orbper) : null,
           pl_trandurh: firstRow.pl_trandurh ? parseFloat(firstRow.pl_trandurh) : null,
           pl_trandep: firstRow.pl_trandep ? parseFloat(firstRow.pl_trandep) : null,
@@ -82,7 +73,6 @@ export function FileUploader({ onDataLoaded, onAnalyze, isDataLoaded, isAnalyzin
           pl_insol: firstRow.pl_insol ? parseFloat(firstRow.pl_insol) : null,
           pl_eqt: firstRow.pl_eqt ? parseFloat(firstRow.pl_eqt) : null,
           st_tmag: firstRow.st_tmag ? parseFloat(firstRow.st_tmag) : null,
-          st_dist: firstRow.st_dist ? parseFloat(firstRow.st_dist) : null,
           st_teff: firstRow.st_teff ? parseFloat(firstRow.st_teff) : null,
           st_logg: firstRow.st_logg ? parseFloat(firstRow.st_logg) : null,
           st_rad: firstRow.st_rad ? parseFloat(firstRow.st_rad) : null
@@ -159,10 +149,6 @@ export function FileUploader({ onDataLoaded, onAnalyze, isDataLoaded, isAnalyzin
     // Convert numeric strings to numbers
     const parsedRow = {
       ...selectedRow,
-      ra: selectedRow.ra ? parseFloat(selectedRow.ra) : null,
-      dec: selectedRow.dec ? parseFloat(selectedRow.dec) : null,
-      st_pmra: selectedRow.st_pmra ? parseFloat(selectedRow.st_pmra) : null,
-      st_pmdec: selectedRow.st_pmdec ? parseFloat(selectedRow.st_pmdec) : null,
       pl_orbper: selectedRow.pl_orbper ? parseFloat(selectedRow.pl_orbper) : null,
       pl_trandurh: selectedRow.pl_trandurh ? parseFloat(selectedRow.pl_trandurh) : null,
       pl_trandep: selectedRow.pl_trandep ? parseFloat(selectedRow.pl_trandep) : null,
@@ -170,7 +156,6 @@ export function FileUploader({ onDataLoaded, onAnalyze, isDataLoaded, isAnalyzin
       pl_insol: selectedRow.pl_insol ? parseFloat(selectedRow.pl_insol) : null,
       pl_eqt: selectedRow.pl_eqt ? parseFloat(selectedRow.pl_eqt) : null,
       st_tmag: selectedRow.st_tmag ? parseFloat(selectedRow.st_tmag) : null,
-      st_dist: selectedRow.st_dist ? parseFloat(selectedRow.st_dist) : null,
       st_teff: selectedRow.st_teff ? parseFloat(selectedRow.st_teff) : null,
       st_logg: selectedRow.st_logg ? parseFloat(selectedRow.st_logg) : null,
       st_rad: selectedRow.st_rad ? parseFloat(selectedRow.st_rad) : null

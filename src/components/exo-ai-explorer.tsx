@@ -40,10 +40,6 @@ export function ExoAiExplorer() {
     // Transform to API payload format and log
     const apiPayload = {
       stellar_data: {
-        ra: exoplanetData.ra || 0,
-        dec: exoplanetData.dec || 0,
-        st_pmra: exoplanetData.st_pmra || 0,
-        st_pmdec: exoplanetData.st_pmdec || 0,
         pl_orbper: exoplanetData.pl_orbper || 0,
         pl_trandurh: exoplanetData.pl_trandurh || 0,
         pl_trandep: exoplanetData.pl_trandep || 0,
@@ -51,7 +47,6 @@ export function ExoAiExplorer() {
         pl_insol: exoplanetData.pl_insol || 0,
         pl_eqt: exoplanetData.pl_eqt || 0,
         st_tmag: exoplanetData.st_tmag || 0,
-        st_dist: exoplanetData.st_dist || 0,
         st_teff: exoplanetData.st_teff || 0,
         st_logg: exoplanetData.st_logg || 0,
         st_rad: exoplanetData.st_rad || 0
@@ -83,10 +78,6 @@ export function ExoAiExplorer() {
         apiResponse = {
           message: "Exoplanet classification completed",
           stellar_object_data: {
-            ra: exoplanetData.ra || 0,
-            dec: exoplanetData.dec || 0,
-            st_pmra: exoplanetData.st_pmra || 0,
-            st_pmdec: exoplanetData.st_pmdec || 0,
             pl_orbper: exoplanetData.pl_orbper || 0,
             pl_trandurh: exoplanetData.pl_trandurh || 0,
             pl_trandep: exoplanetData.pl_trandep || 0,
@@ -94,7 +85,6 @@ export function ExoAiExplorer() {
             pl_insol: exoplanetData.pl_insol || 0,
             pl_eqt: exoplanetData.pl_eqt || 0,
             st_tmag: exoplanetData.st_tmag || 0,
-            st_dist: exoplanetData.st_dist || 0,
             st_teff: exoplanetData.st_teff || 0,
             st_logg: exoplanetData.st_logg || 0,
             st_rad: exoplanetData.st_rad || 0

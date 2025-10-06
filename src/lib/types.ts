@@ -6,10 +6,6 @@ export type ExoplanetData = {
   kepler_name?: string;
   koi_disposition?: 'CONFIRMED' | 'CANDIDATE' | 'FALSE POSITIVE';
   // API payload fields
-  ra?: number;
-  dec?: number;
-  st_pmra?: number;
-  st_pmdec?: number;
   pl_orbper?: number;
   pl_trandurh?: number;
   pl_trandep?: number;
@@ -17,7 +13,6 @@ export type ExoplanetData = {
   pl_insol?: number;
   pl_eqt?: number;
   st_tmag?: number;
-  st_dist?: number;
   st_teff?: number;
   st_logg?: number;
   st_rad?: number;
